@@ -1,3 +1,4 @@
+import { isBoolean } from '@vueki/utils'
 import { ShapeFlags } from './vnode'
 
 export function render(vnode, container) {
@@ -50,7 +51,7 @@ const domPropsRE = /[A-E]|^(value|checked|selected|muted|disabled)$/
 function mountProps(props, el) {
   if (props) {
     for (const key in props) {
-      const value = props[key]
+      let value = props[key]
       if (key === 'style') {
         for (const styleName in value)
           el.style[styleName] = value[styleName]
@@ -63,9 +64,13 @@ function mountProps(props, el) {
         el.addEventListener(eventName, value)
       }
       else if (domPropsRE.test(key)) {
+        if (value === '' && isBoolean(el[key]))
+          value = true
         el[key] = value
       }
       else {
+        if (value === null || value === false)
+          el.removeAttribute(key)
         el.setAttribute(key, value)
       }
     }

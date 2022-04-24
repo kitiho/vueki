@@ -13,10 +13,12 @@ importers:
   apps/example:
     specifiers:
       '@vueki/reactive': workspace:*
+      '@vueki/runtime': workspace:*
       typescript: ^4.5.4
       vite: ^2.9.5
     dependencies:
       '@vueki/reactive': link:../../packages/reactive
+      '@vueki/runtime': link:../../packages/runtime
     devDependencies:
       typescript: 4.6.3
       vite: 2.9.5

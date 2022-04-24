@@ -8,7 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueki/reactive":"workspace:*"
+    "@vueki/reactive":"workspace:*",
+    "@vueki/runtime":"workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.5.4",
