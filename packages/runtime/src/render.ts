@@ -68,11 +68,8 @@ function mountProps(props, el) {
           value = true
         el[key] = value
       }
-      else {
-        if (value === null || value === false)
-          el.removeAttribute(key)
-        el.setAttribute(key, value)
-      }
+      else if (value === null || value === false) { el.removeAttribute(key) }
+      else { el.setAttribute(key, value) }
     }
   }
 }

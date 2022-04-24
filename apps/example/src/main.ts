@@ -33,7 +33,7 @@ const vnode = h(
       h('li', null, 2),
       h('li', { style: { color: 'blue' } }, 3),
       h(Fragment, null, [h('li', null, '4'), h('li', null, '5')]),
-      h('li', null, 1),
+      h('li', null, 2),
     ])
   ]
 )
