@@ -1,8 +1,73 @@
 import { isBoolean } from '@vueki/utils'
+import { patchChildren, patchProps } from './patchProps'
 import { ShapeFlags } from './vnode'
 
 export function render(vnode, container) {
-  mount(vnode, container)
+  const prevVNode = container.__vnode
+
+  if (!vnode) {
+    if (prevVNode)
+      unmount(prevVNode)
+  }
+  else {
+    patch(prevVNode, vnode, container)
+  }
+
+  container._vnode = vnode
+}
+function unmount(vnode) {
+  const { shapFlag, el } = vnode
+  if (shapFlag & ShapeFlags.COMPONENT)
+    unmountComponent(vnode)
+  else if (shapFlag & ShapeFlags.FRAGMENT)
+    unmountFragment(vnode)
+  else
+    el.parentNode.removeChild(el)
+}
+
+function unmountComponent(vnode) {
+  // todo
+}
+function unmountFragment(vnode) {
+  // todo
+}
+function processComponent(n1, n2, container) {
+  // todo
+}
+function patch(n1, n2, container) {
+  if (n1 && !isSameVNode(n1, n2)) {
+    unmount(n1)
+    n1 = null
+  }
+  const { shapFlag } = n2
+  if (shapFlag & ShapeFlags.COMPONENT)
+    processComponent(n1, n2, container)
+  else if (shapFlag & ShapeFlags.TEXT)
+    processText(n1, n2, container)
+  else if (shapFlag & ShapeFlags.FRAGMENT)
+    processFragment(n1, n2, container)
+  else
+    processElement(n1, n2, container)
+}
+function processText(n1, n2, container) {
+  if (n1) {
+    n2.el = n1.el
+    n1.el.textContent = n2.children
+  }
+  else { mountTextNode(n2, container) }
+}
+function processFragment(n1, n2, container) {
+
+}
+function processElement(n1, n2, container) {
+  if (n1)
+    patchElement(n1, n2)
+
+  else mountElement(n2, container)
+}
+
+function isSameVNode(n1, n2) {
+  return n1.type === n2.type
 }
 
 function mount(vnode, container) {
@@ -21,15 +86,21 @@ function mount(vnode, container) {
 }
 
 function mountElement(vnode: any, container: any) {
-  const { type, props } = vnode
+  const { type, props, shapFlag, children } = vnode
   const el = document.createElement(type)
-  mountProps(props, el)
-  mountChildren(vnode, el)
+  patchProps(null, props, el)
+  if (shapFlag & ShapeFlags.TEXT_CHILDREN)
+    mountTextNode(vnode, container)
+  else if (shapFlag & ShapeFlags.ARRAY_CHILDREN)
+    mountChildren(children, container)
+
   container.appendChild(el)
+  vnode.el = el
 }
 function mountTextNode(vnode: any, container: any) {
   const textNode = document.createTextNode(vnode.children)
   container.appendChild(textNode)
+  vnode.el = textNode
 }
 function mountFragment(vnode: any, container: any) {
   mountChildren(vnode, container)
@@ -38,38 +109,14 @@ function mountComponent(vnode: any, container: any) {
   throw new Error('Function not implemented.')
 }
 
-function mountChildren(vnode, container) {
-  const { shapFlag, children } = vnode
-  if (shapFlag & ShapeFlags.TEXT_CHILDREN)
-    mountTextNode(vnode, container)
-  else if (shapFlag & ShapeFlags.ARRAY_CHILDREN)
-    children.forEach(child => mount(child, container))
+function mountChildren(children, container) {
+  children.forEach((child) => {
+    patch(null, child, container)
+  })
 }
 
-const domPropsRE = /[A-E]|^(value|checked|selected|muted|disabled)$/
-
-function mountProps(props, el) {
-  if (props) {
-    for (const key in props) {
-      let value = props[key]
-      if (key === 'style') {
-        for (const styleName in value)
-          el.style[styleName] = value[styleName]
-      }
-      else if (key === 'class') {
-        el.className = value
-      }
-      else if (/^on[^a-z]/.test(key)) {
-        const eventName = key.slice(2).toLowerCase()
-        el.addEventListener(eventName, value)
-      }
-      else if (domPropsRE.test(key)) {
-        if (value === '' && isBoolean(el[key]))
-          value = true
-        el[key] = value
-      }
-      else if (value === null || value === false) { el.removeAttribute(key) }
-      else { el.setAttribute(key, value) }
-    }
-  }
+function patchElement(n1, n2) {
+  n2.el = n1.el
+  patchProps(n1.props, n2.props, n2.el)
+  patchChildren(n1, n2, n2.el)
 }

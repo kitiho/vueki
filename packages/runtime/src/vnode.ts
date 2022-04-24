@@ -38,5 +38,6 @@ export function h(
     props,
     children,
     shapFlag,
+    el: null,
   }
 }

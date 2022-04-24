@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@vueki/reactive":"workspace:*",
-    "@vueki/runtime":"workspace:*"
+    "@vueki/runtime":"workspace:*",
+    "@vueki/runtime-dom":"workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.5.4",
