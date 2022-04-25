@@ -1,7 +1,9 @@
 import { ShapeFlags, isArray, isString } from '@vueki/utils'
 
 export const Text = Symbol('Text')
-
+export function isSameVnode(n1: any, n2: any) {
+  return n1.type === n2.type && n1.key === n2.key
+}
 export function createVnode(type: any, props: any, children: any = null) {
   const shapeFlag = isString(type) ? ShapeFlags.ELEMENT : 0
   const vnode = {
