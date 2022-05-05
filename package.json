@@ -1,6 +1,17 @@
 {
+	"type": "module",
+	"scripts": {
+		"dev": "node scripts/dev.js -s"
+	},
 	"devDependencies": {
 		"typescript": "^4.6.3",
-		"eslint": "^8.13.0"
+		"eslint": "^8.13.0",
+		"minimist": "^1.2.6",
+		"rollup": "^2.71.1",
+		"execa": "^6.1.0",
+		"rollup-plugin-typescript2": "^0.31.2",
+		"@rollup/plugin-commonjs": "^22.0.0",
+		"@rollup/plugin-json": "^4.1.0",
+		"@rollup/plugin-node-resolve": "^13.3.0"
 	}
 }
